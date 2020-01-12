@@ -1,0 +1,27 @@
+name: cfvc
+version: 1.0.0
+license: BSD3
+cabal-version: >= 1.18
+build-type: Simple
+
+executable cfvc
+    build-depends: base < 5
+                 , random
+                 , mtl
+                 , containers
+                 , lens
+                 , http-conduit
+                 , bytestring
+                 , case-insensitive
+                 , attoparsec
+    other-modules: Network.Hequests.Request
+                 , Network.Hequests.Types
+                 , Network.Hequests.Simple
+                 , Network.VJClient.Types
+                 , Network.VJClient.Client
+                 , Network.VJClient.Constants
+                 , Network.VJClient.API
+                 , Network.VJClient.Parsers
+    main-is: Main.hs
+    hs-source-dirs: src
+    default-language: Haskell2010
