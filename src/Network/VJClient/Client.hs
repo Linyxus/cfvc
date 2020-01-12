@@ -3,6 +3,7 @@
 module Network.VJClient.Client where
 import Network.VJClient.Types
 import Network.VJClient.Constants
+import Network.VJClient.Parsers
 import Network.Hequests.Simple (post, Response)
 import Data.ByteString.Char8 (unpack)
 import qualified Network.VJClient.API as API
@@ -19,3 +20,12 @@ vjLogin (VJAuth u p) = liftSIO (API.login u p) >>= f
                 "success" -> return ()
                 e -> throwError . LoginError $ unpack e
           | otherwise = throwError $ LoginError "Invalid Status Code"
+
+vjFindProblem :: String -- ^ OJ
+              -> String -- ^ Problem ID
+              -> VJClient VJProblem
+vjFindProblem oj prob = liftSIO (API.findPS oj prob) >>= f
+  where f :: Response -> VJClient VJProblem
+        f resp
+          | R.getResponseStatusCode resp == 200 = parseVJProblem $ R.responseBody resp
+          | otherwise = throwError $ UnknownError "Bad status code while fetching information of problems"

@@ -19,6 +19,8 @@ data VJAuth = VJAuth { vjUsername :: String
 
 data VJError = LoginError String
              | ProblemNotFound
+             | ResponseParseError
+             | UnknownError String
   deriving (Eq, Show)
 
 type VJClient = ExceptT VJError SessionIO
@@ -29,10 +31,8 @@ runClient = evalSession_ . runExceptT
 liftSIO :: SessionIO a -> VJClient a
 liftSIO = lift
 
-data VJOJ = CodeForces | UVA
-  deriving (Eq, Show)
-
-data VJProblem = VJProblem { vjOj :: VJOJ
+data VJProblem = VJProblem { vjOj :: String
                            , vjPid :: Int
                            , vjProbNum :: String
+                           , vjProbName :: String
                            } deriving (Eq, Show)
