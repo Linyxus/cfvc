@@ -1,8 +1,10 @@
+{-# LANGUAGE OverloadedStrings #-}
 -- | Raw API bindings of Virtual Judge
 module Network.VJClient.API where
-import Network.Hequests.Simple (post, get_, Response, SessionIO)
+import Network.Hequests.Simple (post, post', get_, Response, SessionIO)
 import Network.VJClient.Constants
 import Network.VJClient.Types
+import Network.VJClient.ToJSON
 import Data.ByteString.Char8 (unpack)
 import qualified Network.Hequests.Request as R
 
@@ -24,3 +26,16 @@ findPS oj prob = post u q
   where u = urlOfAction VJFindProblemSimple
         q = [ ("oj", oj)
             , ("problemId", prob)]
+
+edit :: VJContest -> SessionIO Response
+edit = postJSON u
+  where u = urlOfAction VJEdit
+
+postJSON :: ToJSON p
+         => String -- ^ URL
+         -> p -- ^ The json object to be posted
+         -> SessionIO Response
+postJSON u json = post' config u []
+  where jsonHeader = ("Content-Type", "application/json")
+        defaultHeaders = R.headers R.defaultConfig
+        config = R.defaultConfig { R.headers = (jsonHeader:) <$> defaultHeaders, R.body = Just $ encodeJSON json }

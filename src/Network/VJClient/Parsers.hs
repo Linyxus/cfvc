@@ -5,11 +5,12 @@
 -- of JSON, parsers are written in attoparsec instead of aeson
 module Network.VJClient.Parsers
   ( parseVJProblem
+  , parseVJContestId
   ) where
 import Network.VJClient.Types
 import Prelude hiding (takeWhile)
 import Data.Attoparsec.ByteString
-import Data.Word8 (Word8, _quotedbl, _comma, _bracketleft, isSpace, isDigit)
+import Data.Word8 (Word8, _colon, _quotedbl, _comma, _bracketleft, _braceright, _braceleft, isSpace, isDigit)
 import Data.ByteString (ByteString)
 import Control.Applicative
 import Control.Monad (when)
@@ -22,8 +23,17 @@ doubleQuoteP = word8 _quotedbl
 bracketLeftP :: Parser Word8
 bracketLeftP = word8 _bracketleft
 
+braceLeftP :: Parser Word8
+braceLeftP = word8 _braceleft
+
+braceRightP :: Parser Word8
+braceRightP = word8 _braceright
+
 commaP :: Parser Word8
 commaP = word8 _comma
+
+colonP :: Parser Word8
+colonP = word8 _colon
 
 nullP :: Parser ByteString
 nullP = string "null"
@@ -89,8 +99,16 @@ pVJProblem = fmap f . runExceptT $ p
         indicator (FPSInt 0) = return ()
         indicator _ = throwError ()
 
+pVJContestId :: Parser Int
+pVJContestId = braceLeftP >> stringP >> colonP >> intP <* braceRightP
+
 parseVJProblem :: ByteString -> VJClient VJProblem
 parseVJProblem s = case parseOnly pVJProblem s of
                      Left _ -> throwError ResponseParseError
                      Right Nothing -> throwError ProblemNotFound
                      Right (Just p) -> return p
+
+parseVJContestId :: ByteString -> VJClient Int
+parseVJContestId s = case parseOnly pVJContestId s of
+                       Left _ -> throwError ResponseParseError
+                       Right i -> return i

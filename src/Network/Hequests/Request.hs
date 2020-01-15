@@ -1,17 +1,21 @@
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE RecordWildCards #-}
 -- |
 
 module Network.Hequests.Request
   ( module Network.Hequests.Request
   , module Network.HTTP.Conduit
   , module Network.HTTP.Simple
+  , module Network.Hequests.Types
   ) where
 
 import Network.Hequests.Types
 import Data.ByteString (ByteString, concat)
 import Network.HTTP.Simple
 import Network.HTTP.Conduit hiding (httpLbs)
+import Debug.Trace
 import qualified Control.Monad.State as ST
+import qualified Data.Map as M
 
 requestWithMethod :: ByteString -> RequestConfig -> String -> IO (Response ByteString)
 requestWithMethod method config = httpBS
@@ -58,16 +62,22 @@ evalSession_ :: SessionIO a -> IO a
 evalSession_ sess = ST.evalStateT sess emptyCookieMap
 
 buildRequest :: RequestConfig -> Request -> Request
-buildRequest config = buildQuery config . buildParams config . buildHeaders config
-  where buildQuery (RequestConfig query _ _ _) req =
+buildRequest config = buildHeaders config . buildBody config . buildQuery config . buildParams config
+  where buildQuery RequestConfig{..} req =
           case query of
             Just q -> setRequestQueryString q req
             Nothing -> req
-        buildParams (RequestConfig _ params _ _) req =
+        buildParams RequestConfig{..} req =
           case params of
             Just p -> urlEncodedBody p req
             Nothing -> req
-        buildHeaders (RequestConfig _ _ _ mheaders) =
-          case mheaders of
-            Just headers -> setRequestHeaders headers
-            Nothing -> id
+        buildHeaders RequestConfig{..} =
+          maybe id updateRequestHeaders headers
+        buildBody = maybe id (setRequestBody . RequestBodyBS) . body
+
+updateRequestHeaders :: [(HeaderName, ByteString)] -> Request -> Request
+updateRequestHeaders nh r = setRequestHeaders h' r
+  where h' = M.toList $ foldr ins m nh
+        m = M.fromList h
+        h = requestHeaders r
+        ins (key, val) = M.insert key val

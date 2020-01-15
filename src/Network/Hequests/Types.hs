@@ -15,7 +15,9 @@ type HeaderName = CI ByteString
 data RequestConfig = RequestConfig { query :: Maybe Query
                                    , params :: Maybe [(ByteString, ByteString)]
                                    , auth :: Maybe AuthInfo
-                                   , headers :: Maybe [(HeaderName, ByteString)]}
+                                   , headers :: Maybe [(HeaderName, ByteString)]
+                                   , body :: Maybe ByteString
+                                   }
 
 pythonHeaders = [ ("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.132 Safari/537.36")
                 , ("Accept-Encoding", "gzip, deflate")
@@ -23,7 +25,7 @@ pythonHeaders = [ ("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6
                 , ("Connection", "keep-alive")
                 ]
 
-defaultConfig = RequestConfig Nothing Nothing Nothing (Just pythonHeaders)
+defaultConfig = RequestConfig Nothing Nothing Nothing (Just pythonHeaders) Nothing
 
 newtype CookieMap = CookieMap { getCookieMap :: M.Map ByteString Cookie }
 
