@@ -42,14 +42,14 @@ data VJProblem = VJProblem { vjOj :: String
                            } deriving (Eq, Show)
 
 data VJAccess = Public
-                | Protected String
-                | Private String
-                deriving (Eq, Show)
+              | Protected String
+              | Private String
+              deriving (Eq, Show)
 
-data VJContest = VJContest { vjBeginTime :: Word
+data VJContest = VJContest { vjBeginTime :: Int
                            , vjDesc :: String
                            , vjDescFmt :: String
-                           , vjLength :: Word
+                           , vjLength :: Int
                            , vjAccess :: VJAccess
                            , vjShowPeers :: Bool
                            , vjTitle :: String

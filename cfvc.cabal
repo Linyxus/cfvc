@@ -16,6 +16,8 @@ executable cfvc
                  , attoparsec
                  , word8
                  , time
+                 , optparse-applicative
+                 , yaml
     other-modules: Network.Hequests.Request
                  , Network.Hequests.Types
                  , Network.Hequests.Simple
@@ -25,6 +27,12 @@ executable cfvc
                  , Network.VJClient.API
                  , Network.VJClient.Parsers
                  , Network.VJClient.ToJSON
+                 , App.CFVC.Config.Yaml
+                 , App.CFVC.Config.Types
+                 , App.CFVC.Config.Parsers
+                 , App.CFVC.Config.Time
+                 , App.CFVC.Config
+                 , App.CFVC.Types
     main-is: Main.hs
     hs-source-dirs: src
     default-language: Haskell2010
