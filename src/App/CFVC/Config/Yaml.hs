@@ -1,7 +1,8 @@
 {-# LANGUAGE OverloadedStrings #-}
 module App.CFVC.Config.Yaml where
 import App.CFVC.Config.Types
-import Data.Yaml (ParseException
+import App.CFVC.Types
+import Data.Yaml ( ParseException
                  , decodeFileEither
                  , FromJSON(..)
                  , withObject
@@ -21,3 +22,6 @@ instance FromJSON LoadConfig where
     <*> v .:? "show-peers"
     <*> v .:? "auth-username"
     <*> v .:? "auth-password"
+
+loadYaml :: String -> IO (Either ParseException LoadConfig)
+loadYaml = decodeFileEither

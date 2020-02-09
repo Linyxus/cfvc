@@ -1,4 +1,5 @@
 module Main where
+import qualified App.CFVC as App
 
 main :: IO ()
-main = putStrLn "Hello, Nix & Haskell!"
+main = App.main

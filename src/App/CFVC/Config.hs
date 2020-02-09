@@ -1,9 +1,14 @@
 {-# LANGUAGE RecordWildCards #-}
-module App.CFVC.Config where
+{-# LANGUAGE TupleSections #-}
+module App.CFVC.Config
+  ( loadApp
+  , module App.CFVC.Types
+  ) where
 import App.CFVC.Types
 import App.CFVC.Config.Types
 import App.CFVC.Config.Parsers
 import App.CFVC.Config.Time
+import App.CFVC.Config.Yaml
 import Network.VJClient.Types
 import Network.VJClient.Client
 import Control.Monad.Except
@@ -55,5 +60,19 @@ resolve AppConfig{..} = do
   vjProblems <- liftVJClient $ resolveProblems cred acProblems
   return VJContest{..}
 
+getAuth :: AppConfig -> VJAuth
+getAuth AppConfig{..} = let vjUsername = acAuthUser
+                            vjPassword = acAuthPassword
+                        in VJAuth{..}
+
 resolveProblems :: VJAuth -> [String] -> VJClient [VJProblem]
 resolveProblems cred probs = vjLogin cred >> mapM (vjFindProblem "codeforces") probs
+
+parseYaml :: String -> App LoadConfig
+parseYaml = ExceptT . fmap f . loadYaml
+  where f (Left e) = Left $ YamlParseError e
+        f (Right x) = return x
+
+loadApp :: String -> App (VJAuth, VJContest)
+loadApp path = parseYaml path >>= liftLoad . loadConfig >>= f
+  where f ac = (getAuth ac,) <$> resolve ac

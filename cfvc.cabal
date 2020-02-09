@@ -18,6 +18,8 @@ executable cfvc
                  , time
                  , optparse-applicative
                  , yaml
+                 , directory
+                 , pretty-simple
     other-modules: Network.Hequests.Request
                  , Network.Hequests.Types
                  , Network.Hequests.Simple
@@ -33,6 +35,7 @@ executable cfvc
                  , App.CFVC.Config.Time
                  , App.CFVC.Config
                  , App.CFVC.Types
+                 , App.CFVC
     main-is: Main.hs
     hs-source-dirs: src
     default-language: Haskell2010

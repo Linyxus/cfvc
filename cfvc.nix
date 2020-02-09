@@ -1,6 +1,7 @@
 { mkDerivation, attoparsec, base, bytestring, case-insensitive
-, containers, http-conduit, lens, mtl, optparse-applicative, random
-, stdenv, time, word8, yaml
+, containers, directory, http-conduit, lens, mtl
+, optparse-applicative, pretty-simple, random, stdenv, time, word8
+, yaml
 }:
 mkDerivation {
   pname = "cfvc";
@@ -9,8 +10,9 @@ mkDerivation {
   isLibrary = false;
   isExecutable = true;
   executableHaskellDepends = [
-    attoparsec base bytestring case-insensitive containers http-conduit
-    lens mtl optparse-applicative random time word8 yaml
+    attoparsec base bytestring case-insensitive containers directory
+    http-conduit lens mtl optparse-applicative pretty-simple random
+    time word8 yaml
   ];
   license = stdenv.lib.licenses.bsd3;
 }

@@ -3,17 +3,25 @@ module App.CFVC.Types
   , liftLoad
   , liftVJClient
   , liftSessionIO
+  , liftEither
+  , runApp
+  , executeApp
   , App(..)
   , AppError(..)
+  , module Network.VJClient.Types
+  , module App.CFVC.Config.Types
   ) where
 import Network.VJClient.Types
 import App.CFVC.Config.Types
 import Control.Monad.Except
 import Control.Monad.Identity (runIdentity)
+import Data.Yaml (ParseException)
+import Text.Pretty.Simple (pPrint)
 
 data AppError = ClientError VJError
               | ConfigLoadError String
-              deriving (Eq, Show)
+              | YamlParseError ParseException
+              deriving (Show)
 
 type App = ExceptT AppError IO
 
@@ -28,3 +36,11 @@ liftVJClient m = ExceptT $ f <$> runClient m
         f (Right x) = return x
 
 liftSessionIO = liftVJClient . liftSIO
+
+runApp :: App a -> IO (Either AppError a)
+runApp = runExceptT
+
+executeApp :: App a -> IO ()
+executeApp = (>>= f) . runApp
+  where f (Left e) = putStr "[Error]\n" >> pPrint e
+        f _ = return ()
