@@ -41,7 +41,6 @@ urlOf = ("https://vjudge.net/contest/" <>) . show
 main :: IO ()
 main = executeApp $ do
   cliConfig@CLIConfig{..} <- parseCLI
-  liftIO $ putStrLn "Hey! Here is cfvc."
   liftIO maybeInitConfig
   liftIO $ putStr "[Info] Loading config from " >> getConfigPath >>= putStrLn
   (auth, contest) <- liftIO getConfigPath >>= loadApp cliConfig
