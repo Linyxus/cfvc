@@ -28,7 +28,7 @@ vjFindProblem oj prob = liftSIO (API.findPS oj prob) >>= f
   where f :: Response -> VJClient VJProblem
         f resp
           | R.getResponseStatusCode resp == 200 = parseVJProblem $ R.responseBody resp
-          | otherwise = throwError $ UnknownError "Bad status code while fetching information of problems"
+          | otherwise = throwError $ UnknownError $ "Bad status code while fetching information for problem " <> prob
 
 vjCreateContest :: VJContest
                 -> VJClient Int -- ^ Contest ID
