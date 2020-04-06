@@ -12,13 +12,17 @@ module App.CFVC.Types
   , module App.CFVC.Config.Types
   ) where
 import Network.VJClient.Types
+import qualified Network.VJClient.Types as VJ
+import Network.CFClient.Types
+import qualified Network.CFClient.Types as CF
 import App.CFVC.Config.Types
 import Control.Monad.Except
 import Control.Monad.Identity (runIdentity)
 import Data.Yaml (ParseException)
 import Text.Pretty.Simple (pPrint)
 
-data AppError = ClientError VJError
+data AppError = VJClientError VJError
+              | CFClientError CFError
               | ConfigLoadError String
               | YamlParseError ParseException
               deriving (Show)
@@ -31,8 +35,13 @@ liftLoad = mapExceptT (return . f . runIdentity)
         f (Right x) = return x
 
 liftVJClient :: VJClient a -> App a
-liftVJClient m = ExceptT $ f <$> runClient m
-  where f (Left e) = Left $ ClientError e
+liftVJClient m = ExceptT $ f <$> VJ.runClient m
+  where f (Left e) = Left $ VJClientError e
+        f (Right x) = return x
+
+liftCFClient :: CFClient a -> App a
+liftCFClient m = ExceptT $ f <$> CF.runClient m
+  where f (Left e) = Left $ CFClientError e
         f (Right x) = return x
 
 liftSessionIO = liftVJClient . liftSIO

@@ -29,6 +29,10 @@ executable cfvc
                  , Network.VJClient.API
                  , Network.VJClient.Parsers
                  , Network.VJClient.ToJSON
+                 , Network.CFClient.Client
+                 , Network.CFClient.Constants
+                 , Network.CFClient.Types
+                 , Network.CFClient.Parsers
                  , App.CFVC.Config.Yaml
                  , App.CFVC.Config.Types
                  , App.CFVC.Config.Parsers
