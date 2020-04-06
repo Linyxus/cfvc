@@ -3,14 +3,17 @@ module App.CFVC where
 import App.CFVC.Types
 import App.CFVC.Config
 import Network.VJClient.Client
-import System.Directory (getAppUserDataDirectory, doesPathExist)
+import System.Directory (getAppUserDataDirectory, doesPathExist, createDirectoryIfMissing)
 import Text.Pretty.Simple (pPrint)
 
 appName = "cfvc"
 configFile = "config.yaml"
 
 getConfigPath :: IO String
-getConfigPath = (<> configFile) . (<> "/") <$> getAppUserDataDirectory appName
+getConfigPath = (<> configFile) . (<> "/") <$> getConfigDir
+
+getConfigDir :: IO String
+getConfigDir = getAppUserDataDirectory appName
 
 configExists :: IO Bool
 configExists = getConfigPath >>= doesPathExist
@@ -22,6 +25,7 @@ maybeInitConfig :: IO ()
 maybeInitConfig = configExists >>= go
   where go False = do
           putStrLn "[Info] No config file detected."
+          createDirectoryIfMissing True =<< getConfigDir
           p <- getConfigPath
           writeYamlTemp p
           putStrLn $ "[Info] Template config has been written to " <> p
