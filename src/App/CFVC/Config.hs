@@ -3,15 +3,21 @@
 module App.CFVC.Config
   ( loadApp
   , module App.CFVC.Types
+  , yamlTemplate
+  , parseCLI
   ) where
 import App.CFVC.Types
 import App.CFVC.Config.Types
 import App.CFVC.Config.Parsers
 import App.CFVC.Config.Time
 import App.CFVC.Config.Yaml
+import App.CFVC.Config.CLI
 import Network.VJClient.Types
 import Network.VJClient.Client
+import Network.CFClient.Types
+import Network.CFClient.Client
 import Control.Monad.Except
+import Control.Applicative ((<|>))
 
 getField :: String -> Maybe a -> Load a
 getField field Nothing = throwError $ "Field " <> field <> " is required"
@@ -32,19 +38,23 @@ getAccess LoadConfig{..} = getField "access-level" lcAccessLevel >>= f
         g 1 = Protected
         g 2 = Private
 
-loadConfig :: LoadConfig -> Load AppConfig
-loadConfig lc@LoadConfig{..} = do
-  acTitle <- getField "title" lcTitle
-  acDesc <- getField "description" lcDesc
-  acAnnouncement <- getField "announcement" lcAnnouncement
+loadConfig :: CLIConfig -> LoadConfig -> Load AppConfig
+loadConfig cl@CLIConfig {..} lc@LoadConfig{..} = do
+  acTitle <- getField "title" $ clTitle <|> lcTitle
+  acDesc <- getField "description" $ clDesc <|> lcDesc
+  acAnnouncement <- getField "announcement" $ clAnnouncement <|> lcAnnouncement
   acShowPeers <- getField "show-peers" lcShowPeers
-  acBeginTime <- getTime "begin-time" lcBeginTime
-  acAuthUser <- getField "auth-username" lcAuthUser
-  acAuthPassword <- getField "auth-password" lcAuthPassword
-  acLength <- getTimeDelta "length" lcLength
+  acBeginTime <- getTime "begin-time" $ clBeginTime <|> lcBeginTime
+  acAuthUser <- getField "username" $ clAuthUser <|> lcAuthUser
+  acAuthPassword <- getField "password" $ clAuthPassword <|> lcAuthPassword
+  acLength <- getTimeDelta "length" $ clLength <|> lcLength
   acAccess <- getAccess lc
   let acProblems = lcProblems
+      acContest = clContestId <|> lcContest
   return AppConfig{..}
+
+resolveContest :: Int -> App [String]
+resolveContest = liftCFClient . loadContestProbNums
 
 resolve :: AppConfig -> App VJContest
 resolve AppConfig{..} = do
@@ -57,7 +67,10 @@ resolve AppConfig{..} = do
       vjAccess = acAccess
       cred = VJAuth acAuthUser acAuthPassword
   vjBeginTime <- liftIO $ resolveTime acBeginTime
-  vjProblems <- liftVJClient $ resolveProblems cred acProblems
+  contestProbs <- case acContest of
+                   Nothing -> return []
+                   Just x -> resolveContest x
+  vjProblems <- liftVJClient $ resolveProblems cred $ acProblems <> contestProbs
   return VJContest{..}
 
 getAuth :: AppConfig -> VJAuth
@@ -73,6 +86,9 @@ parseYaml = ExceptT . fmap f . loadYaml
   where f (Left e) = Left $ YamlParseError e
         f (Right x) = return x
 
-loadApp :: String -> App (VJAuth, VJContest)
-loadApp path = parseYaml path >>= liftLoad . loadConfig >>= f
+parseCLI :: App CLIConfig
+parseCLI = liftIO parseArgs
+
+loadApp :: CLIConfig -> String -> App (VJAuth, VJContest)
+loadApp cli path = parseYaml path >>= liftLoad . loadConfig cli >>= f
   where f ac = (getAuth ac,) <$> resolve ac

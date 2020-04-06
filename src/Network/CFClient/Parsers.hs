@@ -64,10 +64,11 @@ pProblems :: Int -> Parser [String]
 pProblems n = many $ pNextProb n
 
 parseProblems :: Int -> ByteString -> CFClient [String]
-parseProblems n src = f $ parseOnly (pProblems n) src
+parseProblems n src = f $ g <$> parseOnly (pProblems n) src
   where f (Left e) = throwError ResponseParseError
         f (Right []) = throwError ResponseParseError
         f (Right x) = return x
+        g = fmap (show n <>)
 
 consumer :: Parser ByteString
 consumer = takeTill (== _less)

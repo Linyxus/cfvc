@@ -2,6 +2,7 @@ module App.CFVC.Types
   ( liftIO
   , liftLoad
   , liftVJClient
+  , liftCFClient
   , liftSessionIO
   , liftEither
   , runApp

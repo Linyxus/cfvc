@@ -20,6 +20,7 @@ executable cfvc
                  , yaml
                  , directory
                  , pretty-simple
+                 , raw-strings-qq
     other-modules: Network.Hequests.Request
                  , Network.Hequests.Types
                  , Network.Hequests.Simple
@@ -34,6 +35,7 @@ executable cfvc
                  , Network.CFClient.Types
                  , Network.CFClient.Parsers
                  , App.CFVC.Config.Yaml
+                 , App.CFVC.Config.CLI
                  , App.CFVC.Config.Types
                  , App.CFVC.Config.Parsers
                  , App.CFVC.Config.Time

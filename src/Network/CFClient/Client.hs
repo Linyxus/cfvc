@@ -16,6 +16,3 @@ loadContestPage x = lift (get1_ $ urlOf x) >>= g
 
 loadContestProbNums :: Int -> CFClient [String]
 loadContestProbNums n = loadContestPage n >>= parseProblems n
-
--- >>> runClient $ loadContestProbNums 1296
--- Right ["A","B","C","D","E1","E2","F"]
