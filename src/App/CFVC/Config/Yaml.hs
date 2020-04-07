@@ -34,29 +34,37 @@ yamlTemplate
   = [r|
 # Title of the contest on Vjudge
 title: "A Good Contest on CodeForces"
+
 # Id of the CodeForces contest to be cloned, optional
-contest: 1328
-# Additional problems, optional
+contest:
+
+# A list of additional problems, optional
 problems:
-  - "1212a"
+# For example:
+# - "1329a"
+
 # Begin time of the contest. It can either be absolute or relative.
 # Absolute: 13:30:00 means the nearest 13:00:00 in the future
 # Relative: +1:00:00 means 1 hour later
 begin-time: 13:30:00
 # Length of the contest
 length: 24:0:0
+
 # Description of the contest
 desc: ""
 # Annoucement of the contest
 announcement: ""
+
 # 0: Public
 # 1: Protected
 # 2: Private
 access-level: 2
 # Password of the contest if access level is either protected or private
 password: "password"
+
 # Show peers
 show-peers: true
+
 # VJudge username
 auth-username:
 # VJudge password
