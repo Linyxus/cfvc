@@ -3,6 +3,22 @@
 
 ## Installation
 
+### Install with Homebrew (macOS, Linux)
+
+[Homebrew](https://brew.sh/) is one of the most famous package managers on macOS. It is also available on Linux, detailed information of which can be found at [Homebrew on Linux](https://docs.brew.sh/Homebrew-on-Linux).
+
+macOS
+```shell
+brew install linyxus/tools/cfvc
+```
+
+Linux
+```shell
+brew install linyxus/tools/cfvc-linux
+```
+
+If you do not want to bother yourself by installing Homebrew on Linux, prebuilt binaries for Linux can also be found on the release page.
+
 ### Manual installation
 Prerequisites:
 - make
