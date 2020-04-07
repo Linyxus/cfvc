@@ -2,7 +2,7 @@ language: c
 cache:
   directories:
   - $HOME/.ghcup
-  - $HOME/.cabal
+  - $HOME/.cabal/store
 os:
   - linux
   - osx
