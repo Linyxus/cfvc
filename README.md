@@ -17,7 +17,7 @@ Linux
 brew install linyxus/tools/cfvc-linux
 ```
 
-If you do not want to bother yourself by installing Homebrew on Linux, prebuilt binaries for Linux can also be found on the release page.
+If you do not want to bother yourself with the installation of Homebrew on Linux, prebuilt binaries for Linux can also be found on the release page.
 
 ### Manual installation
 Prerequisites:
