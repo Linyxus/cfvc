@@ -1,0 +1,21 @@
+language: c
+cache:
+  directories:
+  - $HOME/.ghcup
+  - $HOME/.cabal
+os:
+  - linux
+  - osx
+before_install:
+  - curl -L https://gist.githubusercontent.com/Linyxus/ae14286e06129be1216b1aa1ee228c2d/raw/aa33d738b3f3d24f0174198b508bfc7b5eb1eb62/install-ghr.sh | sh
+  - curl -L https://gist.githubusercontent.com/Linyxus/5a36a02748b8ff1f7e559aa275e7bf5e/raw/80b05a2f6a58f101e7eb1b9f4517bf58fec1652d/install-ghc.sh | sh
+  - . "$HOME/.ghcup/env"
+install: 
+  - cabal update
+  - cabal install --only-dependencies
+script:
+  - cabal configure
+  - cabal build
+  - cabal install
+after_success:
+  - curl -L https://gist.githubusercontent.com/Linyxus/4d0324e06784a7cb59e235209f7cd5dd/raw/7ce5abeea52994d2828f1f552971f523c257caed/release-binary.sh | sh
